@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QSet>
 
+class QAction;
 class PackageDetail;
 class PackageEntry;
 class QTreeWidgetItem;
@@ -31,14 +32,19 @@ public slots:
 
 private:
     void initPackageEntries();
+    void initActions();
     void updatePackageTreeStatusBar(int count);
 
     PackageDetail getPackageDetail(const QString & name);
 
     void updateFilter();
 
+private slots:
+    void install();
+    void uninstall();
+
 protected:
-     bool eventFilter(QObject *obj, QEvent *event);
+    void contextMenuEvent(QContextMenuEvent *event);
 
 private:
     Ui::PackageWidget * ui_;
@@ -55,4 +61,7 @@ private:
     bool    showInstalled_;
     QString filterName_;
     QString filterCategory_;
+
+    QAction * installAction_;
+    QAction * uninstallAction_;
 };

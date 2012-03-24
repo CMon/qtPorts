@@ -4,10 +4,14 @@
 #include <macport.h>
 #include <util.h>
 
+#include <QMenu>
+#include <QAction>
 #include <QEvent>
-#include <QKeyEvent>
+#include <QContextMenuEvent>
 
 #include <qdebug.h>
+
+Q_DECLARE_METATYPE(PackageEntry)
 
 namespace {
 enum PackagesTreeColumns {
@@ -17,6 +21,10 @@ enum PackagesTreeColumns {
     ColPackageInstalled
 };
 
+enum DataRole {
+    PackageEntryRole = Qt::UserRole + 1
+};
+
 }
 
 PackageWidget::PackageWidget(QWidget *parent) :
@@ -24,19 +32,21 @@ PackageWidget::PackageWidget(QWidget *parent) :
     ui_(new Ui::PackageWidget),
     showMultiples_(false),
     showInstalled_(false)
-
 {
     ui_->setupUi(this);
 
     ui_->twPackages->sortByColumn(0, Qt::AscendingOrder);
-    ui_->twPackages->installEventFilter(this);
 
     initPackageEntries();
+
+    initActions();
 }
 
 PackageWidget::~PackageWidget()
 {
     delete ui_;
+    delete installAction_;
+    delete uninstallAction_;
 }
 
 void PackageWidget::changeCategory(const QString &category)
@@ -98,11 +108,16 @@ void PackageWidget::initPackageEntries()
 
         const QString isInstalledString = isInstalled ? QString("%1 (%2)").arg(Util::boolToString(isInstalled)).arg(installedPackages_.values(entry.name).size()) : "";
         QTreeWidgetItem * item = new QTreeWidgetItem(QStringList() << entry.name << entry.version << entry.category << isInstalledString);
+        item->setData(0, PackageEntryRole, QVariant::fromValue(entry));
         ui_->twPackages->addTopLevelItem(item);
 
         if (isInstalled) {
             foreach(const InstalledPackageEntry & iEntry, installedPackages_.values(entry.name)) {
                 QTreeWidgetItem * iItem = new QTreeWidgetItem(QStringList() << iEntry.name << iEntry.version);
+                PackageEntry ipEntry = entry;
+                ipEntry.version = iEntry.version;
+                iItem->setData(0, PackageEntryRole, QVariant::fromValue(ipEntry));
+
                 if (iEntry.isActive) {
                     iItem->setBackground(ColPackageVersion, Qt::green);
                 }
@@ -112,6 +127,15 @@ void PackageWidget::initPackageEntries()
     }
 
     updatePackageTreeStatusBar(ui_->twPackages->topLevelItemCount());
+}
+
+void PackageWidget::initActions()
+{
+    installAction_ = new QAction("Install", this);
+    connect(installAction_, SIGNAL(triggered()), this, SLOT(install()));
+
+    uninstallAction_ = new QAction("Uninstall", this);
+    connect(uninstallAction_, SIGNAL(triggered()), this, SLOT(uninstall()));
 }
 
 void PackageWidget::updatePackageTreeStatusBar(int count)
@@ -133,6 +157,7 @@ void PackageWidget::updateFilter()
     int count = 0;
     for (int i = 0; i < ui_->twPackages->topLevelItemCount(); ++i) {
         QTreeWidgetItem * item = ui_->twPackages->topLevelItem(i);
+        const PackageEntry entry = item->data(0, PackageEntryRole).value<PackageEntry>();
 
         if (showMultiples_ && item->childCount() <= 1) {
             // only show those who have more then 1 childs
@@ -145,12 +170,12 @@ void PackageWidget::updateFilter()
             continue;
         }
 
-        if (!filterName_.isEmpty() && !item->data(ColPackageName, Qt::DisplayRole).toString().contains(QRegExp(filterName_))) {
+        if (!filterName_.isEmpty() && !entry.name.contains(QRegExp(filterName_))) {
             item->setHidden(true);
             continue;
         }
 
-        if (!filterCategory_.isEmpty() && item->data(ColPackageCategory, Qt::DisplayRole).toString().trimmed() != filterCategory_) {
+        if (!filterCategory_.isEmpty() && entry.category != filterCategory_) {
             item->setHidden(true);
             continue;
         }
@@ -162,15 +187,31 @@ void PackageWidget::updateFilter()
     updatePackageTreeStatusBar(count);
 }
 
-bool PackageWidget::eventFilter(QObject *obj, QEvent *event)
+void PackageWidget::install()
 {
-    if (event->type() == QEvent::ContextMenu) {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-        qDebug("Ate key press %d", keyEvent->key());
-        return true;
-    } else {
-        // standard event processing
-        return QObject::eventFilter(obj, event);
-    }
+    QTreeWidgetItem * item = ui_->twPackages->currentItem();
+    const PackageEntry entry = item->data(0, PackageEntryRole).value<PackageEntry>();
+
+    qDebug () << "Install: " << entry.name << entry.version;
 }
 
+void PackageWidget::uninstall()
+{
+    QTreeWidgetItem * item = ui_->twPackages->currentItem();
+    const PackageEntry entry = item->data(0, PackageEntryRole).value<PackageEntry>();
+
+    qDebug () << "Uninstall: " << entry.name << entry.version;
+}
+
+void PackageWidget::contextMenuEvent(QContextMenuEvent *event)
+{
+    QMenu menu(this);
+
+#warning check if already installed most recent version if so gray out install action
+    menu.addAction(installAction_);
+
+#warning check if installed and if not disable the uninstall action
+//    if (showInstalled_ && item->data(ColPackageInstalled, Qt::DisplayRole).toString().isEmpty()) {
+
+    menu.addAction(uninstallAction_);
+    menu.exec(event->globalPos());}
