@@ -1,0 +1,9 @@
+*.pro.user
+
+Makefile
+moc_*
+*.o
+ui_*
+
+qtPorts.app/
+
