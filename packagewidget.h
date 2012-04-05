@@ -29,9 +29,9 @@ public slots:
     void on_rbOnlyInstalled_toggled(bool checked);
     void on_rbMultipleInstalls_toggled(bool checked);
     void on_leFilter_textChanged(const QString & text);
+    void refreshPackages();
 
 private:
-    void initPackageEntries();
     void initActions();
     void updatePackageTreeStatusBar(int count);
 

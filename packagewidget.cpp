@@ -37,7 +37,7 @@ PackageWidget::PackageWidget(QWidget *parent) :
 
     ui_->twPackages->sortByColumn(0, Qt::AscendingOrder);
 
-    initPackageEntries();
+    refreshPackages();
 
     initActions();
 }
@@ -93,8 +93,13 @@ void PackageWidget::on_leFilter_textChanged(const QString &text)
     updateFilter();
 }
 
-void PackageWidget::initPackageEntries()
+void PackageWidget::refreshPackages()
 {
+    installedPackages_.clear();
+    packageEntries_.clear();
+    categories_.clear();
+    ui_->twPackages->clear();
+
     foreach (const InstalledPackageEntry & entry, macPort_.getInstalledPackageList()) {
         installedPackages_.insert(entry.name, entry);
     }

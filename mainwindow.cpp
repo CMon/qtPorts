@@ -14,6 +14,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui_->twCategories->sortByColumn(0, Qt::AscendingOrder);
 
     initCategories();
+
+    QAction * refreshButton = new QAction(this);
+    connect(refreshButton, SIGNAL(triggered()), ui_->wPackageWidget, SLOT(refreshPackages()));
+
+    ui_->mainToolBar->addAction(refreshButton);
 }
 
 MainWindow::~MainWindow()
