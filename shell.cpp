@@ -1,6 +1,6 @@
 #include "shell.h"
 
-#include <QProcess>
+#include <qdebug.h>
 
 namespace {
 
@@ -12,10 +12,14 @@ QString SuperUserCommand = "/usr/bin/sudo";
 Shell::Shell(QObject *parent) :
     QObject(parent)
 {
+    connect(&process_, SIGNAL(readyReadStandardOutput()), this, SLOT(onReadyReadStandardOutput()));
+
 }
 
 QStringList Shell::runCommand(const QString & command, bool runAsSuperUser, const QStringList & args)
 {
+    stdout_.clear();
+
     QStringList arguments;
     QString program = PortCommand;
     if (runAsSuperUser) {
@@ -26,11 +30,15 @@ QStringList Shell::runCommand(const QString & command, bool runAsSuperUser, cons
     arguments << command;
     if (!arguments.isEmpty()) arguments << args;
 
-    QProcess process;
-    process.setReadChannel(QProcess::StandardOutput);
+    process_.setReadChannel(QProcess::StandardOutput);
 
-    process.start(program, arguments);
-    process.waitForFinished();
+    process_.start(program, arguments);
+    process_.waitForFinished(-1);
 
-    return QString(process.readAllStandardOutput()).split('\n');
+    return stdout_.split('\n');
+}
+
+void Shell::onReadyReadStandardOutput()
+{
+    stdout_.append(process_.readAllStandardOutput());
 }

@@ -2,6 +2,7 @@
 #include <QObject>
 
 #include <QStringList>
+#include <QProcess>
 
 class Shell : public QObject
 {
@@ -9,6 +10,13 @@ class Shell : public QObject
 public:
     Shell(QObject *parent = 0);
     
-    static QStringList runCommand(const QString & command, bool runAsSuperUser, const QStringList & args = QStringList());
+    QStringList runCommand(const QString & command, bool runAsSuperUser, const QStringList & args = QStringList());
+
+private slots:
+    void onReadyReadStandardOutput();
+
+private:
+    QProcess process_;
+    QString  stdout_;
 };
 

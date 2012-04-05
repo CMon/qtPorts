@@ -46,7 +46,7 @@ MacPort::MacPort(QObject *parent) :
 
 QList<PackageEntry> MacPort::getPackageList()
 {
-    const QStringList shellOutput = Shell::runCommand("list", commands_["list"]);
+    const QStringList shellOutput = shell.runCommand("list", commands_["list"]);
 
     QList<PackageEntry> retval;
     foreach (const QString & line, shellOutput) {
@@ -72,7 +72,7 @@ QList<PackageEntry> MacPort::getPackageList()
 
 QList<InstalledPackageEntry> MacPort::getInstalledPackageList()
 {
-    QStringList shellOutput = Shell::runCommand("installed", commands_["list"]);
+    QStringList shellOutput = shell.runCommand("installed", commands_["list"]);
 
     // first line is: The follwoing ports are currently ... -> drop line
     shellOutput.takeFirst();
@@ -101,7 +101,7 @@ QList<InstalledPackageEntry> MacPort::getInstalledPackageList()
 
 PackageDetail MacPort::getPackageDetail(const QString &name)
 {
-    QStringList shellOutput = Shell::runCommand("info", commands_["info"], QStringList() << name);
+    QStringList shellOutput = shell.runCommand("info", commands_["info"], QStringList() << name);
 
     PackageDetail detail;
     detail.header = shellOutput.takeFirst();

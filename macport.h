@@ -1,5 +1,7 @@
 #pragma once
 
+#include <shell.h>
+
 #include <QObject>
 #include <QMap>
 #include <QPair>
@@ -42,5 +44,6 @@ public:
     PackageDetail getPackageDetail(const QString & name);
 
 private:
+    Shell               shell;
     QMap<QString, bool> commands_;
 };
