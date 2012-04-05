@@ -197,7 +197,7 @@ void PackageWidget::install()
     QTreeWidgetItem * item = ui_->twPackages->currentItem();
     const PackageEntry entry = item->data(0, PackageEntryRole).value<PackageEntry>();
 
-    qDebug () << "Install: " << entry.name << entry.version;
+    qDebug ("sudo port install %s %s", qPrintable(entry.name), qPrintable(entry.version));
 }
 
 void PackageWidget::uninstall()
@@ -205,7 +205,7 @@ void PackageWidget::uninstall()
     QTreeWidgetItem * item = ui_->twPackages->currentItem();
     const PackageEntry entry = item->data(0, PackageEntryRole).value<PackageEntry>();
 
-    qDebug () << "Uninstall: " << entry.name << entry.version;
+    qDebug ("sudo port uninstall %s %s", qPrintable(entry.name), qPrintable(entry.version));
 }
 
 void PackageWidget::contextMenuEvent(QContextMenuEvent *event)
