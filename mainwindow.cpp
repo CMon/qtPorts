@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     initCategories();
 
-    QAction * refreshButton = new QAction(this);
+    QAction * refreshButton = new QAction(QIcon(":refresh.png"), "Update package list", this);
     connect(refreshButton, SIGNAL(triggered()), ui_->wPackageWidget, SLOT(refreshPackages()));
 
     ui_->mainToolBar->addAction(refreshButton);

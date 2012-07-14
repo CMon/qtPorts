@@ -1,5 +1,4 @@
 #include "packagewidget.h"
-#include "ui_packagewidget.h"
 
 #include <macport.h>
 #include <util.h>
@@ -9,6 +8,7 @@
 #include <QEvent>
 #include <QContextMenuEvent>
 
+#include "ui_packagewidget.h"
 #include <qdebug.h>
 
 Q_DECLARE_METATYPE(PackageEntry)
@@ -219,4 +219,5 @@ void PackageWidget::contextMenuEvent(QContextMenuEvent *event)
 //    if (showInstalled_ && item->data(ColPackageInstalled, Qt::DisplayRole).toString().isEmpty()) {
 
     menu.addAction(uninstallAction_);
-    menu.exec(event->globalPos());}
+    menu.exec(event->globalPos());
+}

@@ -25,3 +25,6 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui \
     packagewidget.ui
+
+RESOURCES += \
+    images.qrc
