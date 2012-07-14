@@ -30,6 +30,7 @@ public slots:
     void on_rbMultipleInstalls_toggled(bool checked);
     void on_leFilter_textChanged(const QString & text);
     void refreshPackages();
+    void showListOfObsoletePackages();
 
 private:
     void initActions();
@@ -38,6 +39,8 @@ private:
     PackageDetail getPackageDetail(const QString & name);
 
     void updateFilter();
+
+    static QString createUninstallCommand(const QString & package, const QString & version);
 
 private slots:
     void install();

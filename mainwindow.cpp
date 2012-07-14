@@ -18,7 +18,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QAction * refreshButton = new QAction(QIcon(":refresh.png"), "Update package list", this);
     connect(refreshButton, SIGNAL(triggered()), ui_->wPackageWidget, SLOT(refreshPackages()));
 
+    QAction * showRemovePackagesListButton = new QAction(QIcon(":list.png"), "Show list of duplicate packages to remove", this);
+    connect(showRemovePackagesListButton, SIGNAL(triggered()), ui_->wPackageWidget, SLOT(showListOfObsoletePackages()));
+
     ui_->mainToolBar->addAction(refreshButton);
+    ui_->mainToolBar->addAction(showRemovePackagesListButton);
 }
 
 MainWindow::~MainWindow()

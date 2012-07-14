@@ -7,6 +7,7 @@
 #include <QAction>
 #include <QEvent>
 #include <QContextMenuEvent>
+#include <QMessageBox>
 
 #include "ui_packagewidget.h"
 #include <qdebug.h>
@@ -134,6 +135,29 @@ void PackageWidget::refreshPackages()
     updatePackageTreeStatusBar(ui_->twPackages->topLevelItemCount());
 }
 
+void PackageWidget::showListOfObsoletePackages()
+{
+    QStringList commands;
+
+    for (int i = 0; i < ui_->twPackages->topLevelItemCount(); ++i) {
+        QTreeWidgetItem * item = ui_->twPackages->topLevelItem(i);
+
+        if (item->childCount() <= 1) continue; // skip all non multiple packages
+
+        for (int j = 0; j < item->childCount(); ++j) {
+            QTreeWidgetItem * child = item->child(j);
+            const PackageEntry entry = child->data(0, PackageEntryRole).value<PackageEntry>();
+
+            if (child->background(ColPackageVersion) == Qt::green) continue; // skip the installed version
+
+            commands << createUninstallCommand(entry.name, entry.version);
+        }
+    }
+
+    QMessageBox::information(this, tr("Obsolete packages."), QString("Use following commands to remove the obsolete packages:\n\n%1")
+                             .arg(commands.join("\n")).toUtf8());
+}
+
 void PackageWidget::initActions()
 {
     installAction_ = new QAction("Install", this);
@@ -192,6 +216,11 @@ void PackageWidget::updateFilter()
     updatePackageTreeStatusBar(count);
 }
 
+QString PackageWidget::createUninstallCommand(const QString & package, const QString & version)
+{
+    return QString("sudo port uninstall %1 %2").arg(package).arg(version);
+}
+
 void PackageWidget::install()
 {
     QTreeWidgetItem * item = ui_->twPackages->currentItem();
@@ -205,7 +234,9 @@ void PackageWidget::uninstall()
     QTreeWidgetItem * item = ui_->twPackages->currentItem();
     const PackageEntry entry = item->data(0, PackageEntryRole).value<PackageEntry>();
 
-    qDebug ("sudo port uninstall %s %s", qPrintable(entry.name), qPrintable(entry.version));
+    QMessageBox::information(this, tr("Command to execute"),
+                             tr(QString("Enter the following command to remove the package:\n%1")
+                                .arg(createUninstallCommand(entry.name, entry.version)).toUtf8()));
 }
 
 void PackageWidget::contextMenuEvent(QContextMenuEvent *event)
