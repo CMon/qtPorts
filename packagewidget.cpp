@@ -133,6 +133,10 @@ void PackageWidget::refreshPackages()
         }
     }
 
+    ui_->twPackages->resizeColumnToContents(ColPackageName);
+    ui_->twPackages->resizeColumnToContents(ColPackageVersion);
+    ui_->twPackages->resizeColumnToContents(ColPackageCategory);
+
     updatePackageTreeStatusBar(ui_->twPackages->topLevelItemCount());
 }
 
