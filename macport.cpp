@@ -32,6 +32,7 @@ QMap<QString, bool> initCommands () {
 
     // now set those who need su permissions
     retval["install"] = true;
+    retval["uninstall"] = true;
 
     return retval;
 }
@@ -118,5 +119,62 @@ PackageDetail MacPort::getPackageDetail(const QString &name)
     }
 
     return detail;
+}
+
+bool MacPort::isInstalled(const QString & packageName, const QString & version)
+{
+    QStringList shellOutput = shell.runCommand("installed", commands_["installed"], QStringList() << packageName << version);
+
+    const QString firstLine = shellOutput.takeFirst();
+    if (firstLine.startsWith("None of the specified ports are installed.")) return false;
+
+    return true;
+}
+
+QHash<QString, bool> MacPort::areInstalled(const QStringList & packages)
+{
+    QStringList shellOutput = shell.runCommand("installed", commands_["installed"], packages);
+    shellOutput.takeFirst(); // remove the header
+
+    QHash<QString, bool> installedPackages;
+    foreach(const QString & package, packages) installedPackages[package] = false;
+
+    foreach(const QString & line, shellOutput) {
+        const QString package = line.trimmed().split(QRegExp("\\s")).first();
+        if (package.isEmpty()) continue;
+
+        if (!installedPackages.contains(package)) {
+            qWarning() << "Found package we did not ask for?? package: " << package << "; search for: " << packages;
+            continue;
+        }
+        installedPackages[package] = true;
+    }
+
+    return installedPackages;
+}
+
+QSet<QString> MacPort::getDeps(const QString & packageName)
+{
+    QStringList shellOutput = shell.runCommand("deps", commands_["deps"], QStringList() << packageName);
+
+    QSet<QString> dependencies;
+    foreach (const QString & line, shellOutput) {
+        if (line.startsWith("Library Dependencies") ||
+                line.startsWith("Extract Dependencies") ||
+                line.startsWith("Build Dependencies"))
+        {
+            const QStringList parts = line.split(QRegExp(":\\s+"));
+            if (parts.size() < 2) {
+                qWarning() << "wrong dependancy part found (line: " << line << ")";
+                continue;
+            }
+
+            foreach (const QString & dep, parts.at(1).split(',')) {
+                dependencies << dep.trimmed();
+            }
+        }
+    }
+
+    return dependencies;
 }
 

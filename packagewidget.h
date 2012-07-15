@@ -1,5 +1,6 @@
 #pragma once
 
+#include <dependencydialog.h>
 #include <macport.h>
 
 #include <QWidget>
@@ -51,6 +52,7 @@ protected:
 
 private:
     Ui::PackageWidget * ui_;
+    DependencyDialog    dependencyDialog_;
 
 private:
     MacPort                                   macPort_;

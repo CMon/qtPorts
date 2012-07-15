@@ -31,6 +31,7 @@ enum DataRole {
 PackageWidget::PackageWidget(QWidget *parent) :
     QWidget(parent),
     ui_(new Ui::PackageWidget),
+    dependencyDialog_(this),
     showMultiples_(false),
     showInstalled_(false)
 {
@@ -226,7 +227,8 @@ void PackageWidget::install()
     QTreeWidgetItem * item = ui_->twPackages->currentItem();
     const PackageEntry entry = item->data(0, PackageEntryRole).value<PackageEntry>();
 
-    qDebug ("sudo port install %s %s", qPrintable(entry.name), qPrintable(entry.version));
+    dependencyDialog_.setInstallPackage(entry.name, entry.version);
+    dependencyDialog_.exec();
 }
 
 void PackageWidget::uninstall()

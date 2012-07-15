@@ -15,16 +15,22 @@ SOURCES += main.cpp\
     macport.cpp \
     shell.cpp \
     util.cpp \
-    packagewidget.cpp
+    packagewidget.cpp \
+    dependencywidget.cpp \
+    dependencydialog.cpp
 
 HEADERS  += mainwindow.h \
     macport.h \
     shell.h \
     util.h \
-    packagewidget.h
+    packagewidget.h \
+    dependencywidget.h \
+    dependencydialog.h
 
 FORMS    += mainwindow.ui \
-    packagewidget.ui
+    packagewidget.ui \
+    dependencywidget.ui \
+    dependencydialog.ui
 
 RESOURCES += \
     images.qrc

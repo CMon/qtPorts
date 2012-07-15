@@ -43,6 +43,11 @@ public:
     
     PackageDetail getPackageDetail(const QString & name);
 
+    bool isInstalled(const QString & packageName, const QString & version);
+    QHash<QString, bool> areInstalled(const QStringList & packages);
+
+    QSet<QString> getDeps(const QString & packageName);
+
 private:
     Shell               shell;
     QMap<QString, bool> commands_;
