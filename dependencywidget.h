@@ -35,6 +35,7 @@ private:
     MacPort macPort_;
 
     QString                       basePackage_;
+    QString                       baseVersion_;
     QMap<QString, QSet<QString> > dependancies_;
     QHash<QString, bool>          installedDeps_;
 };

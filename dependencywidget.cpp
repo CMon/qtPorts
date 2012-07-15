@@ -16,15 +16,20 @@ void DependencyWidget::setBasePackage(const QString & packageName, const QString
 {
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-    dependancies_.clear();
+    if (basePackage_ != packageName || baseVersion_ != version) {
+        // if they are not the same anymore we have to request the deps again
+        dependancies_.clear();
+        getDependencies(packageName);
+    }
+
     installedDeps_.clear();
     basePackage_ = packageName;
+    baseVersion_ = version;
 
-    getDependencies(packageName);
     installedDeps_ = macPort_.areInstalled(dependancies_.keys());
 
     updateStatusLine();
-    ui_->leInstallCommand->setText(QString("sudo port install %1 %2").arg(packageName).arg(version));
+    ui_->leInstallCommand->setText(QString("sudo port install %1 %2").arg(basePackage_).arg(baseVersion_));
     updateTree();
 
     QApplication::restoreOverrideCursor();
