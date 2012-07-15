@@ -17,7 +17,8 @@ SOURCES += main.cpp\
     util.cpp \
     packagewidget.cpp \
     dependencywidget.cpp \
-    dependencydialog.cpp
+    dependencydialog.cpp \
+    cleanupdialog.cpp
 
 HEADERS  += mainwindow.h \
     macport.h \
@@ -25,12 +26,14 @@ HEADERS  += mainwindow.h \
     util.h \
     packagewidget.h \
     dependencywidget.h \
-    dependencydialog.h
+    dependencydialog.h \
+    cleanupdialog.h
 
 FORMS    += mainwindow.ui \
     packagewidget.ui \
     dependencywidget.ui \
-    dependencydialog.ui
+    dependencydialog.ui \
+    cleanupdialog.ui
 
 RESOURCES += \
     images.qrc

@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <cleanupdialog.h>
+
 namespace {
 QString AllCategory = "All";
 }
@@ -21,8 +23,12 @@ MainWindow::MainWindow(QWidget *parent) :
     QAction * showRemovePackagesListButton = new QAction(QIcon(":list.png"), "Show list of duplicate packages to remove", this);
     connect(showRemovePackagesListButton, SIGNAL(triggered()), ui_->wPackageWidget, SLOT(showListOfObsoletePackages()));
 
+    QAction * showCleaningTasksButton = new QAction(QIcon(":clean.png"), "Show commands to clean your ports", this);
+    connect(showCleaningTasksButton, SIGNAL(triggered()), this, SLOT(showCleaningTasks()));
+
     ui_->mainToolBar->addAction(refreshButton);
     ui_->mainToolBar->addAction(showRemovePackagesListButton);
+    ui_->mainToolBar->addAction(showCleaningTasksButton);
 }
 
 MainWindow::~MainWindow()
@@ -37,6 +43,13 @@ void MainWindow::on_twCategories_currentItemChanged(QTreeWidgetItem *current, QT
     const QString category = current->text(0);
     if (category == AllCategory) ui_->wPackageWidget->changeCategory("");
     else                         ui_->wPackageWidget->changeCategory(current->text(0));
+}
+
+void MainWindow::showCleaningTasks()
+{
+    CleanupDialog cd;
+    cd.setPackageRemoves(ui_->wPackageWidget->getListOfObsoletePackages());
+    cd.exec();
 }
 
 void MainWindow::initCategories()

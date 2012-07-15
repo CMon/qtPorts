@@ -57,6 +57,27 @@ void PackageWidget::changeCategory(const QString &category)
     updateFilter();
 }
 
+QStringList PackageWidget::getListOfObsoletePackages()
+{
+    QStringList commands;
+
+    for (int i = 0; i < ui_->twPackages->topLevelItemCount(); ++i) {
+        QTreeWidgetItem * item = ui_->twPackages->topLevelItem(i);
+
+        if (item->childCount() <= 1) continue; // skip all non multiple packages
+
+        for (int j = 0; j < item->childCount(); ++j) {
+            QTreeWidgetItem * child = item->child(j);
+            const PackageEntry entry = child->data(0, PackageEntryRole).value<PackageEntry>();
+
+            if (child->background(ColPackageVersion) == Qt::green) continue; // skip the installed version
+
+            commands << createUninstallCommand(entry.name, entry.version);
+        }
+    }
+    return commands;
+}
+
 void PackageWidget::on_twPackages_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem */*previous*/)
 {
     if (!current) return;
@@ -142,25 +163,14 @@ void PackageWidget::refreshPackages()
 
 void PackageWidget::showListOfObsoletePackages()
 {
-    QStringList commands;
+    const QStringList commands = getListOfObsoletePackages();
 
-    for (int i = 0; i < ui_->twPackages->topLevelItemCount(); ++i) {
-        QTreeWidgetItem * item = ui_->twPackages->topLevelItem(i);
-
-        if (item->childCount() <= 1) continue; // skip all non multiple packages
-
-        for (int j = 0; j < item->childCount(); ++j) {
-            QTreeWidgetItem * child = item->child(j);
-            const PackageEntry entry = child->data(0, PackageEntryRole).value<PackageEntry>();
-
-            if (child->background(ColPackageVersion) == Qt::green) continue; // skip the installed version
-
-            commands << createUninstallCommand(entry.name, entry.version);
-        }
+    if (commands.isEmpty()) {
+        QMessageBox::information(this, tr("Obsolete packages."), tr("No obsolete packages found"));
+    } else {
+        QMessageBox::information(this, tr("Obsolete packages."), QString(tr("Use following commands to remove the obsolete packages:\n\n%1"))
+                                 .arg(commands.join("\n")).toUtf8());
     }
-
-    QMessageBox::information(this, tr("Obsolete packages."), QString("Use following commands to remove the obsolete packages:\n\n%1")
-                             .arg(commands.join("\n")).toUtf8());
 }
 
 void PackageWidget::initActions()

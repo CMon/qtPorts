@@ -24,6 +24,7 @@ public:
     
     void changeCategory(const QString & category);
     QSet<QString> getAllCategories() { return categories_; }
+    QStringList getListOfObsoletePackages();
 
 public slots:
     void on_twPackages_currentItemChanged(QTreeWidgetItem * current, QTreeWidgetItem *);

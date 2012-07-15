@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file alias="refresh.png">images/refresh.png</file>
         <file alias="list.png">images/list.png</file>
+        <file alias="clean.png">images/clean.png</file>
     </qresource>
 </RCC>

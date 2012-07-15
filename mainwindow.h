@@ -19,6 +19,7 @@ public:
     
 private slots:
     void on_twCategories_currentItemChanged(QTreeWidgetItem * current, QTreeWidgetItem *);
+    void showCleaningTasks();
 
 private:
     void initCategories();
